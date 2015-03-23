@@ -1,0 +1,60 @@
+README 
+
+Citrusleaf Memcache proxy
+
+Copyright Citrusleaf, Inc. 2012
+
+This code is designed to run as a service between a Memcache-protocol speaking 
+clien and a Citrusleaf server cluster. It listens on either a TCP port or a 
+local Unix socket for binary Memcache messages, translates them into the 
+Citrusleaf protocol, and sends them to the Citrusleaf cluster. Because the 
+Citrusleaf cluster is completely elastic and automatically rebalancing, the 
+client code can be completely unaware of any changes in cluster membership.
+
+Building
+This code requires the Citrusleaf C client library and the libxml2 libraries. If
+you don't have the Citrusleaf C client library, please download it from the
+Citrusleaf web site and build it. Libxml2 is the one of the standard Linux xml
+libraries and may already be installed on your system. If it is not, install
+the libxml2-devel package on your system.
+
+Do a make in the client folder,followed by a make inside the proxy folder.
+Now the proxy engine binary is built.
+
+Usage
+All configuration parameters are specified in an xml configuration file. By 
+default, the code looks for a file called 'cl_proxy.xml' residing in the same
+directory as the executable. If you don't like the default, the location of
+the configuration file can be specified using the --config-file option.
+
+The Citrusleaf database organizes data into 'Namespaces', which are further subdivided 
+into 'sets'. The memcache protocol has only {Key,value} pair. The value for 'namespace ' and 
+'set' must be specified through the configuration file(cl_proxy.xml). The namespace and set value 
+will be used by the proxy engine to contact the citrusleaf server.
+
+The host and the port on which the Aerospike cluster is running, the host and port on which this proxy engine
+should run, are to be specified. The other fields that can be configured are explained in the 
+config file(cl_proxy.xml) as comments.
+
+(If you're just starting out, the default namespace in the configuration file, 'test', is the
+same as the default namespace for the Citrusleaf cluster, so you shouldn't
+have to change anything.)
+
+The host/port (or socket name) of the listener must be specified in the 
+configuration file, as must the hostname/port of at least one of the 
+Citrusleaf servers.
+
+Additional information can be found in the comments in the sample 
+configuration file.
+
+
+To test the usage of memcache proxy engine run the proxy_test binary as follows
+
+./proxy_test -h {host_name} -p {port_name}
+
+{host_name}, {port_name} as configured in the cl_proxy.xml under Transport tag. 
+
+ 
+
+Please report any problems to bugs@citrusleaf.com
+

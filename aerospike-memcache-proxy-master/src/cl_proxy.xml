@@ -1,0 +1,63 @@
+<citrusleafclientproxy daemonize="true" user="citrusleaf" group="citrusleaf">
+    <!--Logging - available levels are critical, warning, info and debug  -->
+    <log filename="/var/log/citrusleaf_proxy.log" level="debug"></log>
+    
+    <!-- The citrusleaf cluster. You must specify at least one initial
+         server in the cluster (a 'seed'). From the seeds, the proxy will
+         automatically discover the rest of the nodes. -->
+    <cluster>
+        <seed host="127.0.0.1" port="3000"></seed>
+        <!-- as mentioned above, a seed the server in the cluster that the
+             proxy intially contacts. You may specify mutiple seeds.
+        <seed host="127.0.0.1" port="3020"></seed>
+        -->
+       
+	<!-- timeouts for transactions with the server  in MS-->
+        <readTimeout>10</readTimeout>
+        <writeTimeout>30</writeTimeout>
+        
+        <!-- The connector defines the type of proxy to the cluster,
+             in this case, a memcache translation proxy.  You can
+             specify multiple connectors to a single cluster, if,
+             for instance, you wanted to be able to read and write
+             data from different namespaces -->
+        <connector>
+            <type>memcache</type>
+            <version>1.0</version>
+            <!-- The asynchronous_requests section enables a slightly
+                 faster mode in which requests on a connection may not
+                 be returned (or fulfilled) in the order in which they
+                 were received. In this mode, you must specify the number
+                 of worker threads.The worker thread is responsible for 
+                 reading to and writing from citrusleaf.-->   
+            <asynchronous_requests>
+                <num_workers>4</num_workers>
+            </asynchronous_requests>
+            
+
+            <!--  The memcache proxy allows standard TCP sockets
+                  as well as UNIX sockets. However, the memcache proxy
+                  will only open a single listener at a time. -->
+            <!--
+            <transport>
+                <type>UNIX_socket</type>
+                <name>/tmp/cl_proxy_socket</name>
+            </transport>
+            -->
+            <transport>
+                <type>TCP_socket</type>
+                <host>127.0.0.1</host>
+                <port>4078</port>
+            </transport>
+            
+            <!-- The namespace and set in the citrusleaf cluster -->
+            <namespace>test</namespace>
+            <set>mySet</set>
+
+            <!-- If you want to use the couchbase smart client, you must 
+                 set the couchbase admin port. (You must also use a TCP 
+                 transport for the data) -->
+            <couchbaseAdminPort>8099</couchbaseAdminPort>
+        </connector>
+    </cluster>
+</citrusleafclientproxy>

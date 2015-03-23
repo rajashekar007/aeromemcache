@@ -1,0 +1,8 @@
+
+To build the Memcache proxy, do the make the project root directory.
+
+In case of errors and dependency issues with respect to C refer 
+README.C and for memcache proxy refer README.proxy
+
+The configuration details to run memcache proxy is given in 
+README.proxy

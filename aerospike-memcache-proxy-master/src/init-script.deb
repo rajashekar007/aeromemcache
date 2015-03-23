@@ -1,0 +1,55 @@
+#!/bin/sh
+# chkconfig: 2345 85 15
+# description: Starts and stops the Citrusleaf daemon
+# this version is for debian/ubuntu which is, as usual, very different from RH
+# current state of the art appears using /lib/lsb/init-functions for logging but not for process
+# this is a very minimal init script!
+
+### BEGIN INIT INFO
+# Provides:		cl_proxy
+# Required-Start:
+# Required-Stop:
+# Default-Start:
+# Deafult-Stop:
+# Short-Description:	Citrusleaf Memcache Proxy Service
+### END INIT INFO
+
+# halt on error
+set -e
+
+CL_PROXY=/usr/bin/cl_proxy
+PIDFILE=/var/run/cl_proxy.pid
+OPTS="--config-file /etc/citrusleaf/cl_proxy.xml"
+
+test -x $CL_PROXY || exit 0
+
+. /lib/lsb/init-functions
+
+
+case "$1" in
+	start)
+		log_daemon_msg "Start citrusleaf proxy: " "cl_proxy"
+		if start-stop-daemon --start --quiet --pidfile /var/run/cl_proxy.pid --exec $CL_PROXY -- $OPTS; then
+			log_end_msg 0
+		else
+			log_end_msg 1
+		fi
+		;;
+	stop)
+		log_daemon_msg "Halt citrusleaf proxy: " "cl_proxy"
+		if start-stop-daemon --stop --quiet --pidfile /var/run/cl_proxy.pid ; then
+			log_end_msg 0
+		else
+			log_end_msg 1
+		fi
+		;;
+	status)
+		status_of_proc -p $PIDFILE $CL_PROXY cl_proxy && exit 0 || exit $?
+		;;
+	*)
+		echo $"Usage: $0 {ignite|start|stop|status}"
+		exit 2
+		;;
+esac
+
+exit 0

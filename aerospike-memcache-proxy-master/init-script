@@ -1,0 +1,63 @@
+#!/bin/sh
+# chkconfig: 2345 85 15
+# description: Starts and stops the Citrusleaf proxy daemon
+
+. /etc/rc.d/init.d/functions
+. /etc/sysconfig/network
+[ "$NETWORKING" = "no" ] && exit 0
+
+CL_PROXY=/usr/bin/cl_proxy
+CL_PROXY_N=$(basename $CL_PROXY)
+LOCKFILE=/var/lock/subsys/citrusleaf_proxy
+
+# in production, the corefiles are so huge as to prevent
+# quick restarts of servers. Turn this on only if requested
+# DAEMON_COREFILE_LIMIT="unlimited"
+
+start() {
+	[ -x /usr/bin/cl_proxy ] || exit 0
+	echo -n $"Starting citrusleaf proxy: "
+	daemon $CL_PROXY --config-file=/etc/citrusleaf/cl_proxy.xml
+	retval=$?
+	echo
+	[ $retval -eq 0 ] && touch $LOCKFILE
+	return $retval
+}
+
+stop() {
+	echo -n $"Stopping citrusleaf proxy: "
+	killproc $CL_PROXY_N
+	retval=$?
+	echo
+	[ $retval -eq 0 ] && rm -f $LOCKFILE
+	return $retval
+}
+
+rh_status() {
+	status $CL_PROXY_N
+}
+
+rh_status_quiet() {
+	status $CL_PROXY_N >/dev/null 2>&1
+}
+
+case "$1" in
+	ignite)
+		rh_status_quiet && exit 0
+		$1
+		;;
+	start)
+		rh_status_quiet && exit 0
+		$1
+		;;
+	stop)
+		rh_status_quiet || exit 0
+		$1
+		;;
+	status)
+		rh_status
+		;;
+	*)
+		echo $"Usage: $0 {ignite|start|stop|status}"
+		exit 2
+esac

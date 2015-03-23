@@ -1,0 +1,20 @@
+#AerospikeInc. 
+#Makefile
+
+all:libcitrusleaf
+	$(MAKE) -C proxy
+
+	@echo "done."
+
+clean:
+	rm -f obj/i86/*
+	rm -f obj/x64/*
+	rm -f obj/native/*
+	rm -f lib/*
+	rm -f lib32/*
+	rm -f lib64/*
+	$(MAKE) -C proxy $@
+
+%:
+	$(MAKE) -f Makefile.native -C src $@
+
